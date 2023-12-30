@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  barnstokkr:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - RUST_LOG=info
+    volumes:
+      - .:/usr/src/myapp
+      - cargo_cache:/usr/local/cargo/registry
+    command: cargo run --release
+
+volumes:
+  cargo_cache:
