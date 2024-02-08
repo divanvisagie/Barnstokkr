@@ -1,28 +1,27 @@
+# Use the official Go image as the base image
+FROM golang:1.18 as builder
 
-# Start with a PyTorch base image
-FROM pytorch/pytorch:latest
+# Set the working directory inside the container
+WORKDIR /app
 
-# Install Rust and system dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    build-essential \
-    pkg-config \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy the go.mod and go.sum files and download dependencies
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-
-# Set the working directory in the container
-WORKDIR /usr/src/barnstokkr
-
-# Copy the current directory contents into the container at /usr/src/barnstokkr
+# Copy the entire project
 COPY . .
 
-# Compile the Rust project
-RUN cargo build --release
+# Build the application
+RUN go build -o barnstokkr cmd/barnstokkr/main.go
 
-# Run the binary
-CMD ["./target/release/barnstokkr"]
+# Use a minimal image for the final container
+FROM gcr.io/distroless/base-debian10
 
+# Copy the built application from the builder stage
+COPY --from=builder /app/barnstokkr /barnstokkr
+
+# Expose the port your app runs on
+EXPOSE 8080
+
+# Command to run the application
+CMD ["/barnstokkr"]
