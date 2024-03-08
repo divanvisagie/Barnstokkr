@@ -1,27 +1,21 @@
-# Use the official Go image as the base image
-FROM golang:1.18 as builder
+# Use an official Python runtime as a parent image
+FROM python:3.8-slim
 
-# Set the working directory inside the container
-WORKDIR /app
+# Set the working directory in the container
+WORKDIR /usr/src/app
 
-# Copy the go.mod and go.sum files and download dependencies
-COPY go.mod go.sum ./
-RUN go mod download
-
-# Copy the entire project
+# Copy the current directory contents into the container at /usr/src/app
 COPY . .
 
-# Build the application
-RUN go build -o barnstokkr cmd/barnstokkr/main.go
+# Install any needed packages specified in requirements.txt
+RUN pip install fastapi uvicorn transformers torch
 
-# Use a minimal image for the final container
-FROM gcr.io/distroless/base-debian10
 
-# Copy the built application from the builder stage
-COPY --from=builder /app/barnstokkr /barnstokkr
+# Make port 8000 available to the world outside this container
+EXPOSE 8000
 
-# Expose the port your app runs on
-EXPOSE 8080
+# Define environment variable
+ENV NAME World
 
-# Command to run the application
-CMD ["/barnstokkr"]
+# Run app.py when the container launches
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--reload"]
