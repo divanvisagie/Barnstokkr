@@ -20,9 +20,9 @@ class EmbeddingsResponse(BaseModel):
     embeddings: List[float]
 
 
-@app.get("/")
+@app.get("/healthcheck")
 def read_root():
-    return {"Hello": "World"}
+    return {"status": "Ok"}
 
 
 @app.post("/embeddings/", response_model=EmbeddingsResponse)
