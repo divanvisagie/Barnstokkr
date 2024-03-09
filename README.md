@@ -16,7 +16,7 @@ make local
 
 ## Documentation
 
-Once you are set up you can browse to [http://localhost:8000/docs](http://localhost:8080/docs) to see the documentation.
+Once you are set up you can browse to [http://localhost:8000/docs](http://localhost:8000/docs) to see the documentation.
 
 
 ## Test
