@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from pydantic import BaseModel
-
+from transformers import AutoTokenizer, AutoModel
 import torch
 
 app = FastAPI()
@@ -9,7 +8,7 @@ app = FastAPI()
 # Load pre-trained model and tokenizer
 model_name = "distilbert-base-uncased"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSequenceClassification.from_pretrained(model_name)
+model = AutoModel.from_pretrained(model_name)
 
 class TextModel(BaseModel):
     text: str
@@ -19,15 +18,15 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/embeddings/")
-async def create_embeddings(item: TextModel):  # Use the Pydantic model here
-    text = item.text  # Access the text attribute from the model instance
+async def create_embeddings(item: TextModel):
     try:
         # Encode text
-        inputs = tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=512)
-        # Generate embeddings
+        inputs = tokenizer(item.text, return_tensors="pt", padding=True, truncation=True, max_length=512)
+        # Generate model output
         with torch.no_grad():
             outputs = model(**inputs)
-        embeddings = outputs.logits.tolist()
+        # Extract embeddings from the last hidden state, then take the mean of the sequence dimension
+        embeddings = outputs.last_hidden_state.mean(dim=1).tolist()
         return {"embeddings": embeddings}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
