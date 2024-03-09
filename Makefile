@@ -17,6 +17,9 @@ clean:
 run:
 	docker-compose up	
 
+local:
+	uvicorn app:app --reload
+
 test:
 	curl -X 'POST' \
 	  'http://127.0.0.1:8000/embeddings/' \
