@@ -1,15 +1,16 @@
 APP_NAME=barnstokkr
 
+main:
+	docker-compose down
+	docker-compose up --build
+
 pushpi:
 	ssh heimdallr.local "mkdir -p ~/src/" \
 	&& rsync -av --progress app.py heimdallr.local:~/src/$(APP_NAME) \
     && rsync -av --progress Dockerfile heimdallr.local:~/src/$(APP_NAME) \
 	&& rsync -av --progress docker-compose.yml heimdallr.local:~/src/$(APP_NAME) \
 	&& rsync -av --progress Makefile heimdallr.local:~/src/$(APP_NAME) \
-
-main:
-	docker-compose down
-	docker-compose up --build
+	&& rsync -av --progress requirements.txt heimdallr.local:~/src/$(APP_NAME) \
 
 clean:
 	docker-compose down

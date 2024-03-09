@@ -4,7 +4,7 @@ FROM python:latest
 # Set the working directory in the container
 WORKDIR /usr/src/app
 
-RUN pip install fastapi uvicorn transformers torch
+RUN pip install fastapi uvicorn transformers torch accelerate
 # Copy the current directory contents into the container at /usr/src/app
 COPY . .
 

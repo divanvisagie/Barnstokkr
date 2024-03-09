@@ -4,6 +4,7 @@ from transformers import AutoTokenizer, AutoModel
 from typing import List
 import torch
 
+huggingface_token = os.environ.get("HUGGINGFACE_TOKEN")
 app = FastAPI()
 
 
