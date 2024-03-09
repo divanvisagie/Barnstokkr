@@ -22,3 +22,6 @@ Cargo.lock
 # python
 env
 __pycache__
+
+# other
+.envrc

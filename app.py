@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
 from typing import List
+import os
 import torch
 
 app = FastAPI()
@@ -42,10 +43,14 @@ async def create_embeddings(item: EmbeddingsRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# Set your Hugging Face token
+huggingface_token = os.environ.get("HUGGINGFACE_TOKEN")
 # Load conversational model and tokenizer
-model_name = "microsoft/DialoGPT-small"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForCausalLM.from_pretrained(model_name)
+model_name = "google/gemma-2b"
+tokenizer = AutoTokenizer.from_pretrained(
+    model_name, use_auth_token=huggingface_token)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name, use_auth_token=huggingface_token, device_map="auto")
 
 
 class ChatRequest(BaseModel):
@@ -59,17 +64,10 @@ class ChatResponse(BaseModel):
 @app.post("/chat", response_model=ChatResponse)
 async def chat(item: ChatRequest):
     try:
-        # Encode the input text
-        input_ids = tokenizer.encode(
-            item.message + tokenizer.eos_token, return_tensors="pt")
-        # Generate a response from the model
-        chat_history_ids = model.generate(
-            input_ids, max_length=1000, pad_token_id=tokenizer.eos_token_id)
-        # Decode the generated tokens to a string
-        reply = tokenizer.decode(
-            chat_history_ids[:, input_ids.shape[-1]:][0],
-            skip_special_tokens=True
-        )
+        input_ids = tokenizer(item.message, return_tensors="pt")#.to("cuda")
+
+        outputs = model.generate(**input_ids)
+        reply = tokenizer.decode(outputs[0])
         return {"reply": reply}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
