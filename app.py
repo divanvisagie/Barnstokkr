@@ -12,7 +12,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModel.from_pretrained(model_name)
 
 
-class TextModel(BaseModel):
+class EmbeddingsRequest(BaseModel):
     text: str
 
 
@@ -26,7 +26,7 @@ def read_root():
 
 
 @app.post("/embeddings/", response_model=EmbeddingsResponse)
-async def create_embeddings(item: TextModel):
+async def create_embeddings(item: EmbeddingsRequest):
     try:
         # Encode text
         inputs = tokenizer(item.text, return_tensors="pt",
