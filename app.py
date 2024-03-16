@@ -7,6 +7,12 @@ import torch
 app = FastAPI()
 
 
+# Load pre-trained model and tokenizer
+embeddings_model = "distilbert-base-uncased"
+e_tokenizer = AutoTokenizer.from_pretrained(embeddings_model)
+e_model = AutoModel.from_pretrained(embeddings_model)
+
+
 class EmbeddingsRequest(BaseModel):
     text: str
 
@@ -23,10 +29,6 @@ def read_root():
 @app.post("/embeddings", response_model=EmbeddingsResponse)
 async def create_embeddings(item: EmbeddingsRequest):
     try:
-        # Load pre-trained model and tokenizer
-        embeddings_model = "distilbert-base-uncased"
-        e_tokenizer = AutoTokenizer.from_pretrained(embeddings_model)
-        e_model = AutoModel.from_pretrained(embeddings_model)
         # Encode text
         inputs = e_tokenizer(item.text, return_tensors="pt",
                              padding=True, truncation=True, max_length=512)
