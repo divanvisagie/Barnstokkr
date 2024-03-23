@@ -6,11 +6,10 @@ import torch
 
 app = FastAPI()
 
-
 # Load pre-trained model and tokenizer
-embeddings_model = "distilbert-base-uncased"
-tokenizer = AutoTokenizer.from_pretrained(embeddings_model)
-model = AutoModel.from_pretrained(embeddings_model)
+embeddings_model = "avsolatorio/GIST-large-Embedding-v0"
+e_tokenizer = AutoTokenizer.from_pretrained(embeddings_model)
+e_model = AutoModel.from_pretrained(embeddings_model)
 
 
 class EmbeddingsRequest(BaseModel):
@@ -30,11 +29,11 @@ def read_root():
 async def create_embeddings(item: EmbeddingsRequest):
     try:
         # Encode text
-        inputs = tokenizer(item.text, return_tensors="pt",
-                           padding=True, truncation=True, max_length=512)
+        inputs = e_tokenizer(item.text, return_tensors="pt",
+                             padding=True, truncation=True, max_length=512)
         # Generate model output
         with torch.no_grad():
-            outputs = model(**inputs)
+            outputs = e_model(**inputs)
         # Extract embeddings from the last hidden state,
         # then take the mean of the sequence dimension
         embeddings = outputs.last_hidden_state.mean(dim=1).tolist()[0]
