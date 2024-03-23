@@ -27,3 +27,7 @@ test:
 	  -H 'accept: application/json' \
 	  -H 'Content-Type: application/json' \
 	  -d '{"text": "Your text here and its great"}'
+
+speed:
+	hyperfine "sh test_barnstokkr.sh" --warmup 3 --min-runs 3
+	hyperfine "sh test_ollama.sh" --warmup 3 --min-runs 3

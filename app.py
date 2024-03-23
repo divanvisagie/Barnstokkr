@@ -4,14 +4,13 @@ from transformers import AutoTokenizer, AutoModel
 from typing import List
 import torch
 
-huggingface_token = os.environ.get("HUGGINGFACE_TOKEN")
 app = FastAPI()
 
 
 # Load pre-trained model and tokenizer
 embeddings_model = "distilbert-base-uncased"
-e_tokenizer = AutoTokenizer.from_pretrained(embeddings_model)
-e_model = AutoModel.from_pretrained(embeddings_model)
+tokenizer = AutoTokenizer.from_pretrained(embeddings_model)
+model = AutoModel.from_pretrained(embeddings_model)
 
 
 class EmbeddingsRequest(BaseModel):
@@ -31,11 +30,11 @@ def read_root():
 async def create_embeddings(item: EmbeddingsRequest):
     try:
         # Encode text
-        inputs = e_tokenizer(item.text, return_tensors="pt",
-                             padding=True, truncation=True, max_length=512)
+        inputs = tokenizer(item.text, return_tensors="pt",
+                           padding=True, truncation=True, max_length=512)
         # Generate model output
         with torch.no_grad():
-            outputs = e_model(**inputs)
+            outputs = model(**inputs)
         # Extract embeddings from the last hidden state,
         # then take the mean of the sequence dimension
         embeddings = outputs.last_hidden_state.mean(dim=1).tolist()[0]
