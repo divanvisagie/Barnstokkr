@@ -14,4 +14,4 @@ COPY . .
 EXPOSE 8000
 
 # Run app.py when the container launches
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--reload"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0"]
