@@ -1,8 +1,15 @@
 # Barnstokkr
-Service for creating embeddings from strings.
+Barnstokkr is a simple API that provides embeddings for text.
+It is a FastAPI wrapper around the Huggingface Transformers library.
+
+The repository boasts a simple "production" implementation as
+well as some experiments and Benchmarks to compare different models
+in Huggingface's rankings. 
+
+Ultimately the goal of the project was to provide embeddings locally on a 
+project designed to run on an Raspberry Pi 5 8GB model. 
 
 ![logo](docs/logo.png)
-
 
 ## Setup
 
@@ -17,7 +24,6 @@ make local
 ## Documentation
 
 Once you are set up you can browse to [http://localhost:8000/docs](http://localhost:8000/docs) to see the documentation.
-
 
 ## Test
 
